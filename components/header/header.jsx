@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import classNames from 'classnames';
 import styles from './header.module.scss';
-import LinkCtr from '@/components/link-ctr/link-ctr';
 
 export default function Header({
     loading,
@@ -11,8 +10,8 @@ export default function Header({
     showLinkBackground,
 }) {
     // State
-    const [backgroundColor, setBackgroundColor] = useState(false);
-    const [transition, setTransition] = useState(false);
+    const [transitionBackgroundColor, setTransitionBackgroundColor] =
+        useState(false);
 
     // Name and Title
     const firstName = 'Stephen';
@@ -40,19 +39,15 @@ export default function Header({
     const toEngineer = useRef();
 
     useEffect(() => {
-        if (!transition) {
-            return;
-        }
+        const delay = 2000;
 
-        if (!overlay.current || !ctr.current) {
-            return;
-        }
+        setTimeout(async () => {
+            if (!overlay.current || !ctr.current) {
+                return;
+            }
 
-        run();
-
-        async function run() {
             // Fade overlay background
-            setBackgroundColor(true);
+            setTransitionBackgroundColor(true);
 
             // Set ctr height
             const { height, width } = ctr.current.getBoundingClientRect();
@@ -73,7 +68,7 @@ export default function Header({
 
             // Loading is complete after animation
             setLoading(false);
-        }
+        }, delay);
 
         async function anim(from, to, duration) {
             const fromName = from.current;
@@ -122,7 +117,7 @@ export default function Header({
                 return 'done';
             }
         }
-    }, [loading, setLoading, speed, transition]);
+    }, [loading, setLoading, speed]);
 
     return (
         <>
@@ -162,18 +157,10 @@ export default function Header({
                 <div
                     ref={overlay}
                     className={classNames(styles['loading-overlay'], {
-                        [styles['background-color']]: backgroundColor,
+                        [styles['background-color']]: transitionBackgroundColor,
                     })}
                 >
-                    {/* Name and title */}
-                    <div
-                        ref={ctr}
-                        className={styles['ctr']}
-                        onClick={() => {
-                            setTransition(true);
-                        }}
-                        style={{ cursor: 'pointer' }}
-                    >
+                    <div ref={ctr} className={styles['ctr']}>
                         {
                             <>
                                 <span
@@ -208,19 +195,6 @@ export default function Header({
                                 </span>
                             </>
                         }
-                    </div>
-
-                    {/* Nav */}
-                    <div className={styles['routes']}>
-                        <Link className={styles['link']} href="/resume">
-                            Resume
-                        </Link>
-                        <Link className={styles['link']} href="/Projects">
-                            Projects
-                        </Link>
-                        <Link className={styles['link']} href="/posts">
-                            Posts
-                        </Link>
                     </div>
                 </div>
             )}
